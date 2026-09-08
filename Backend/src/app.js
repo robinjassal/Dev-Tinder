@@ -2,11 +2,18 @@ const express = require("express");
 
 const app = express();
 
-app.use("/test", (req, res) => {
-  res.send("helo from server");
+// app.use("/", (req, res) => {
+//   res.send("Home");
+// });
+app.use("/test/22", (req, res) => {
+  res.send("test22");
 });
+app.use("/test", (req, res) => {
+  res.send("test1");
+});
+
 app.use("/hello", (req, res) => {
-  res.send("helo from server");
+  res.send("test helo");
 });
 
 app.listen(5000, () => {
