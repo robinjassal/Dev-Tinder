@@ -1,18 +1,15 @@
 const express = require("express");
-
+const connectDB = require("./config/database");
 const app = express();
 
-app.use("/getUserData", (req, res) => {
-  throw new Error("User not found");
-  res.send("User Data Sent");
-});
+connectDB()
+  .then(() => {
+    console.log("Database connection established");
+    app.listen(5000, () => {
+      console.log("Server is listening on Port 5000");
+    });
+  })
 
-app.use("/", (err, req, res, next) => {
-  if (err) {
-    res.status(500).send("something went wrong");
-  }
-});
-
-app.listen(5000, () => {
-  console.log("Server is listening on Port 5000");
-});
+  .catch((err) => {
+    console.error("Database cannot be connected");
+  });
