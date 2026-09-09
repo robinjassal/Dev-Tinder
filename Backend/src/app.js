@@ -2,26 +2,25 @@ const express = require("express");
 
 const app = express();
 
-app.use(
+// GET /users ==> it check all the app.xxx("matching route") functions
+
+// Get /users =>middleware chain =>request handle(which sends response that is called response handler)
+
+app.use("/", (req, res) => {
+  res.send("handling / route");
+});
+
+app.get(
   "/user",
   (req, res, next) => {
     console.log("handling the route user!!");
     next();
-    // res.send("Response!!");
   },
-  (req, res, next) => {
-    console.log("handling the route user 2!!");
-    next();
-    // res.send("2nd response");
-  },
-  (req, res, next) => {
-    console.log("handling the route user 3!!");
-    next();
-    // res.send("3rd response");
+  (req, res) => {
+    console.log("handling the route user!!");
+    res.send("2nd Route handler");
   },
 );
-
-// app.use("/route",rH,[rH1,rh2,rH2],rH3) perfectly valid
 
 app.listen(5000, () => {
   console.log("Server is listening on Port 5000");
