@@ -10,5 +10,21 @@ const validationSignupData = (req) => {
     throw new Error("Email is not valid");
   }
 };
+const validateEditProfileData = (req) => {
+  const allowedEditFields = [
+    "firstName",
+    "lastName",
+    "emailId",
+    "photoUrl",
+    "about",
+    "skills",
+    "gender",
+    "age",
+  ];
+  const isEditAllowed = Object.keys(req.body).every((field) =>
+    allowedEditFields.includes(field),
+  );
+  return isEditAllowed;
+};
 
-module.exports = { validationSignupData };
+module.exports = { validationSignupData, validateEditProfileData };
