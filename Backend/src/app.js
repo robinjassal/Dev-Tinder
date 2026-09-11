@@ -7,6 +7,7 @@ const { validationSignupData } = require("./utils/validation");
 const validator = require("validator");
 const cookieParser = require("cookie-parser");
 const jwt = require("jsonwebtoken");
+const { userAuth } = require("./middleware/auth");
 
 app.use(express.json());
 app.use(cookieParser());
@@ -70,25 +71,12 @@ app.post("/login", async (req, res) => {
   }
 });
 
-app.get("/profile", async (req, res) => {
+app.get("/profile", userAuth, async (req, res) => {
   try {
-    const cookie = req.cookies;
-    // console.log(cookie);
-
-    const { token } = cookie;
-
-    if (!token) {
-      throw new Error("Invalid token");
-    }
-    //validate my token
-    const decodedMesaage = await jwt.verify(token, process.env.SECRET_KEY_JWT);
-
-    const { _id } = decodedMesaage;
-    const user = await User.findById(_id);
-    if (!user) {
+    if (!req.user) {
       throw new Error("User not found");
     }
-    res.send(user);
+    res.send(req.user);
   } catch (err) {
     res.status(400).send("ERROR :" + err.message);
   }
@@ -170,6 +158,13 @@ app.patch("/user/:userId", async (req, res) => {
     res.send("user updated successfully");
   } catch (error) {
     res.status(400).send(error.message);
+  }
+});
+
+app.post("/sendConnectionRequest", userAuth, async (req, res) => {
+  try {
+  } catch (err) {
+    res.status(400).send("ERROR: " + err.message);
   }
 });
 
