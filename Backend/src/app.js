@@ -6,7 +6,6 @@ const bcrypt = require("bcrypt");
 const { validationSignupData } = require("./utils/validation");
 const validator = require("validator");
 const cookieParser = require("cookie-parser");
-const jwt = require("jsonwebtoken");
 const { userAuth } = require("./middleware/auth");
 
 app.use(express.json());
@@ -54,10 +53,7 @@ app.post("/login", async (req, res) => {
 
     if (isPasswordValid) {
       //create a JWT Token
-      const token = await jwt.sign(
-        { _id: user._id },
-        process.env.SECRET_KEY_JWT,
-      );
+      const token = await user.getJWT();
 
       //Add the token and send the response back to the user
       res.cookie("token", token);
