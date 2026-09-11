@@ -4,8 +4,12 @@ const app = express();
 const User = require("./models/User");
 const bcrypt = require("bcrypt");
 const { validationSignupData } = require("./utils/validation");
+const validator = require("validator");
+const cookieParser = require("cookie-parser");
+const jwt = require("jsonwebtoken");
 
 app.use(express.json());
+app.use(cookieParser());
 
 app.post("/signup", async (req, res) => {
   // const userObj = {
@@ -33,6 +37,60 @@ app.post("/signup", async (req, res) => {
     res.send("user Added successfully");
   } catch (err) {
     res.status(400).send("ERROR: " + err.message);
+  }
+});
+app.post("/login", async (req, res) => {
+  try {
+    const { emailId, password } = req.body;
+    if (!validator.isEmail(emailId)) {
+      return res.status(400).send("Invalid email");
+    }
+    const user = await User.findOne({ emailId: emailId });
+    if (!user) {
+      throw new Error("Invalid credentials");
+    }
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+
+    if (isPasswordValid) {
+      //create a JWT Token
+      const token = await jwt.sign(
+        { _id: user._id },
+        process.env.SECRET_KEY_JWT,
+      );
+
+      //Add the token and send the response back to the user
+      res.cookie("token", token);
+
+      res.send("Login successful");
+    } else {
+      throw new Error("Invalid credentials");
+    }
+  } catch (err) {
+    res.status(400).send("ERROR: " + err.message);
+  }
+});
+
+app.get("/profile", async (req, res) => {
+  try {
+    const cookie = req.cookies;
+    // console.log(cookie);
+
+    const { token } = cookie;
+
+    if (!token) {
+      throw new Error("Invalid token");
+    }
+    //validate my token
+    const decodedMesaage = await jwt.verify(token, process.env.SECRET_KEY_JWT);
+
+    const { _id } = decodedMesaage;
+    const user = await User.findById(_id);
+    if (!user) {
+      throw new Error("User not found");
+    }
+    res.send(user);
+  } catch (err) {
+    res.status(400).send("ERROR :" + err.message);
   }
 });
 
