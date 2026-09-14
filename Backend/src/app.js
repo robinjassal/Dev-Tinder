@@ -13,7 +13,10 @@ const startCleanupJob = require("./utils/cronjob");
 const paymentRouter = require("./routes/payment");
 require("./utils/cronjob");
 
-const allowedOrigins = ["http://localhost:5173"];
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://dev-tinder-1-s10n.onrender.com",
+];
 
 app.use(
   cors({
