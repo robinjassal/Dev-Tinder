@@ -57,6 +57,10 @@ paymentRouter.post("/payment/webhook", async (req, res) => {
     const webhookSignature = req.get("X-Razorpay-Signature");
     console.log("Webhook Signature", webhookSignature);
 
+    console.log("rawBody exists?", !!req.rawBody, typeof req.rawBody);
+    console.log("secret exists?", !!process.env.RAZORPAY_WEBHOOK_SECRET);
+    console.log("signature exists?", !!webhookSignature);
+
     const isWebhookValid = validateWebhookSignature(
       req.rawBody, // requires the raw-body capture middleware from earlier
       webhookSignature,

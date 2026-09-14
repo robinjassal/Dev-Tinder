@@ -32,7 +32,13 @@ app.use(
 );
 app.use(express.json());
 app.use(cookieParser());
-
+app.use(
+  express.json({
+    verify: (req, res, buf) => {
+      req.rawBody = buf.toString();
+    },
+  }),
+);
 app.use("/", authRouter);
 app.use("/", profileRouter);
 app.use("/", connectionReqRouter);
