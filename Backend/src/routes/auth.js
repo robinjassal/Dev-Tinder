@@ -13,6 +13,14 @@ const User = require("../models/User");
 
 const authRouter = express.Router();
 
+const isProduction = process.env.NODE_ENV === "production";
+
+const cookieOptions = {
+  httpOnly: true,
+  secure: isProduction,
+  sameSite: isProduction ? "None" : "Lax",
+};
+
 authRouter.post("/signup", async (req, res) => {
   // const userObj = {
   //   firstName: "Akshay",
@@ -56,9 +64,11 @@ authRouter.post("/login", async (req, res) => {
     if (isPasswordValid) {
       //create a JWT Token
       const token = await user.getJWT();
-
       //Add the token and send the response back to the user
-      res.cookie("token", token);
+      res.cookie("token", token, {
+        ...cookieOptions,
+        expires: new Date(Date.now() + 8 * 3600000),
+      });
 
       res.send(user);
     } else {
@@ -71,6 +81,7 @@ authRouter.post("/login", async (req, res) => {
 authRouter.post("/logout", async (req, res) => {
   try {
     res.cookie("token", null, {
+      ...cookieOptions,
       expires: new Date(Date.now()),
     });
     res.send("Logout Successful");
