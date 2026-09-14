@@ -12,6 +12,7 @@ import Feed from "./pages/Feed";
 import Requests from "./pages/Requests";
 import Connections from "./pages/Connections";
 import Profile from "./pages/Profile";
+import Premium from "./components/Premium";
 
 function App() {
   const dispatch = useDispatch();
@@ -62,6 +63,14 @@ function App() {
           element={
             <ProtectedRoute>
               <Profile />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/premium"
+          element={
+            <ProtectedRoute>
+              <Premium />
             </ProtectedRoute>
           }
         />

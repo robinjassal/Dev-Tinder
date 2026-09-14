@@ -1,6 +1,6 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { Heart, Inbox, Users, User, LogOut } from "lucide-react";
+import { Heart, Inbox, Users, User, LogOut, DollarSign } from "lucide-react";
 import { logoutUser } from "../features/auth/authSlice";
 
 // One source of truth for the nav items, used by both the desktop
@@ -10,6 +10,7 @@ const NAV_ITEMS = [
   { to: "/requests", label: "Requests", icon: Inbox },
   { to: "/connections", label: "Matches", icon: Users },
   { to: "/profile", label: "Profile", icon: User },
+  { to: "/premium", label: "Premium", icon: DollarSign },
 ];
 
 function Navbar() {

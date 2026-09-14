@@ -9,6 +9,9 @@ const authRouter = require("./routes/auth");
 const profileRouter = require("./routes/profile");
 const { connectionReqRouter } = require("./routes/connrequest");
 const userRouter = require("./routes/user");
+const startCleanupJob = require("./utils/cronjob");
+const paymentRouter = require("./routes/payment");
+require("./utils/cronjob");
 
 const allowedOrigins = ["http://localhost:5173"];
 
@@ -31,10 +34,12 @@ app.use("/", authRouter);
 app.use("/", profileRouter);
 app.use("/", connectionReqRouter);
 app.use("/", userRouter);
+app.use("/", paymentRouter);
 
 connectDB()
   .then(() => {
     console.log("Database connection established");
+    startCleanupJob();
     app.listen(5000, () => {
       console.log("Server is listening on Port 5000");
     });
