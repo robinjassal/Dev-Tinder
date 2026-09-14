@@ -58,7 +58,7 @@ paymentRouter.post("/payment/webhook", async (req, res) => {
     console.log("Webhook Signature", webhookSignature);
 
     const isWebhookValid = validateWebhookSignature(
-      JSON.stringify(req.body),
+      req.rawBody, // requires the raw-body capture middleware from earlier
       webhookSignature,
       process.env.RAZORPAY_WEBHOOK_SECRET,
     );
@@ -73,28 +73,29 @@ paymentRouter.post("/payment/webhook", async (req, res) => {
     const paymentDetails = req.body.payload.payment.entity;
 
     const payment = await Payment.findOne({ orderId: paymentDetails.order_id });
+    if (!payment) {
+      console.log(
+        "No matching payment found for order:",
+        paymentDetails.order_id,
+      );
+      return res.status(400).json({ msg: "Payment record not found" });
+    }
+
     payment.status = paymentDetails.status;
     await payment.save();
-    console.log("Payment saved");
 
-    const user = await User.findOne({ _id: payment.userId });
-    user.isPremium = true;
-    user.membershipType = payment.notes.membershipType;
-    console.log("User saved");
-
-    await user.save();
-
-    // Update the user as premium
-
-    // if (req.body.event == "payment.captured") {
-    // }
-    // if (req.body.event == "payment.failed") {
-    // }
-
-    // return success response to razorpay
+    if (paymentDetails.status === "captured") {
+      const user = await User.findOne({ _id: payment.userId });
+      if (user) {
+        user.isPremium = true;
+        user.membershipType = payment.notes?.membershipType;
+        await user.save();
+      }
+    }
 
     return res.status(200).json({ msg: "Webhook received successfully" });
   } catch (err) {
+    console.error("Webhook error:", err); // <-- was missing; now shows in Render logs
     return res.status(500).json({ msg: err.message });
   }
 });
